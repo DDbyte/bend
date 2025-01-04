@@ -1,0 +1,75 @@
+Notice that the findByIdAndUpdate method receives a regular JavaScript object as its argument, 
+and not a new note object created with the Note constructor function.
+
+There is one important detail regarding the use of the findByIdAndUpdate method. By default, 
+the updatedNote parameter of the event handler receives the original document without the modifications. 
+We added the optional { new: true } parameter, which will cause our event handler to be called with 
+the new modified document instead of the original.
+Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then(updatedNote => {
+      response.json(updatedNote)
+    })
+
+
+
+cmd: npm install mongoose
+
+modify the conn str in order to automatically create the db:
+database name (phonebookApp) is added after the / in the connection string.
+const url = 
+`mongodb+srv://user:pass@cluster0.exhnn.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=Cluster0`
+
+
+const http = require('http')
+
+const app = http.createServer((request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/plain' })
+  response.end('Hello All')
+})
+
+const PORT = 3001
+app.listen(PORT)
+console.log(`Server running on port ${PORT}`)
+
+app.use(morgan('tiny')) //predefined http reqs log format(method, url, status code, res time)
+
+-------------------
+
+In JavaScript, to create a multi-line string or use template literals, 
+you must use backticks (``) instead of single or double quotes for the entire string.
+Use backticks (`) to allow interpolation with ${}`.
+Backticks allow strings to span multiple lines without concatenating separate strings.
+A template literal (using backticks ``) is used to create an HTML message
+persons.length
+length property returns the number of entries in the phonebook
+Dynamic Data in Responses:
+personsCount and currentTime values are calculated on-the-fly for every request
+Express.js Request-Response Cycle:
+response.send() method completes the cycle by sending the data to the client.
+Syntax: app.get(path, callback), route defined with .get() must have a unique path; otherwise,
+only the first matching route will execute.
+Callback function executed when the route is matched.
+This function takes two arguments:
+request (req): Contains information about the incoming HTTP request
+response (res): Used to send the response back to the client
+
+------------------------------------------------
+The request object is an instance of http.IncomingMessage from Node.js. Express enhances it to include additional features 
+like route parameters, query string parsing, and body parsing.
+Node.js Base Class:
+http.IncomingMessage (from Node.js's http module)
+Features Added by Express:
+req.params: For accessing route parameters.
+req.query: For accessing query string parameters.
+req.body: For accessing parsed request bodies (requires middleware like express.json()).
+
+The response object is an instance of http.ServerResponse from Node.js. Express extends it to provide more methods for 
+building and sending HTTP responses conveniently.
+Node.js Base Class:
+http.ServerResponse (from Node.js's http module)
+Features Added by Express:
+res.json(): For sending JSON responses.
+res.send(): For sending various types of responses (e.g., strings, HTML, JSON).
+res.status(): For setting the HTTP status code.
+res.redirect(): For redirecting the client to another URL.
+res.render(): For rendering view templates (used in applications with a view engine).
