@@ -46,4 +46,155 @@ const mostBlogs = (blogs) => {
   callback=(obj build as reduce iters, current element) => {author: 1, ...}
   
 }
+//assert id
+code: assert(blog.id, 'blog does not have an id property')
+assert(condition, message) throws an error if condition is false.
+blog.id is evaluated:
+If id exists and is truthy (e.g., not undefined, null, or empty), the assertion passes.
+If id is missing or falsy, the test fails, and the message 'Blog does not have an id property' is displayed.
+**************************************
+code witout test_helper.js
+//tests/blog_api.test.js
+const { test, after, beforeEach } = require('node:test')
+const assert = require('node:assert')
+const mongoose = require('mongoose')
+const supertest = require('supertest')
+const app = require('../app')
 
+const Blog = require('../models/blog')
+const { text } = require('node:stream/consumers')
+
+//supertest instance used to send http reqs to the app without starting the server
+const api = supertest(app)
+
+const initialBlogs = [
+    {
+      title: 'First Blog',
+      author: 'John Doe',
+      url: 'http://example.com/first',
+      likes: 10,
+    },
+    {
+      title: 'Second Blog',
+      author: 'Jane Doe',
+      url: 'http://example.com/second',
+      likes: 20,
+    },
+    {
+        title: 'Third Blog',
+        author: 'Alex Doe',
+        url: 'http://example.com/third',
+        likes: 30,
+      },
+  ]
+  
+//initialize the database
+beforeEach(async () => {    
+    await Blog.deleteMany({});
+    await Blog.insertMany(initialBlogs)
+})//
+
+//verify blogs are returned as JSON and correct count
+test('blogs are returned as json and contain the correct amount', async () => {
+    const response = await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+    //assert to check the response length
+    assert.strictEqual(response.body.length, initialBlogs.length, 'Incorrect number of blogs returned')
+})//
+
+//verify the unique id property is named 'id'
+test('blog posts have id instead of _id', async () => {
+  const response = await api
+    .get('/api/blogs')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogs = response.body
+
+  //assert all blogs have id instead _id
+  blogs.forEach(blog => {
+    assert(blog.id, 'blog does not have an id property')
+    assert(!blog._id, 'blog has an _id propery')
+  });
+})//
+
+//verify that a POST req successfully creates a new blog
+test('HTTP POST req to /api/blogs successfully creates a new blog post', async () => {
+  const nBlog = {
+    title: 'New Blog Test Post',
+    author: 'Alice Smith',
+    url: 'http://example.com/new-blog',
+    likes: 40,
+  }
+
+  //POST req
+  const postRes = await api
+    .post('/api/blogs')
+    .send(nBlog)
+    .expect(201) // 201 Created
+    .expect('Content-Type', /application\/json/)  
+
+  //verify the res content
+  const createdBlog = postRes.body
+  assert.strictEqual(createdBlog.title, nBlog.title)
+  assert.strictEqual(createdBlog.author, nBlog.author)
+  assert.strictEqual(createdBlog.url, nBlog.url)
+  assert.strictEqual(createdBlog.likes, nBlog.likes)
+
+  //verify total number of blogs
+  const allBlogs = await Blog.find({})
+  assert.strictEqual(allBlogs.length, initialBlogs.length+1)
+
+  //verify the newly added blog is saved based on title
+  const titles = allBlogs.map(blog => blog.title)
+  assert(titles.includes(nBlog.title), 'new blog POST not found in db')
+
+})//
+
+//verify if likes propery is missing, it defaults to zero
+test('if likes property is missing, it defaults to zero', async () => {
+  const nBlog = {
+    title: 'Blog Without Likes',
+    author: 'Alex Author',
+    url: 'http://example.com/testnolikes',
+  }
+
+  const postRes = await api
+    .post('/api/blogs')
+    .send(nBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const createdBlog = postRes.body
+
+  //assert if likes default to zero
+  assert.strictEqual(createdBlog.likes, 0, 'the likes property did not default to zero' )
+})//
+
+//test, missing title
+test('POST fails w/ 400 if title is missing', async () => {
+  const nBlog = {
+    author: 'Author No Title',
+    url: 'http://example.com/test-no-title',
+  }
+  const postRes400 = await api
+    .post('/api/blogs')
+    .send(nBlog)
+    .expect(400)
+    .expect('Content-Type', /application\/json/)
+
+  //'title and url are required': The expected error message that the backend should return.
+  assert.strictEqual(postRes400.body.error, 'title and url are required', 'Incorrect error message')
+
+  const allBlogs = await Blog.find({})
+  assert.strictEqual(allBlogs.length, initialBlogs.length, 'the blog added despite missing title')
+
+})//
+
+//cleanup: close database connection
+after(async () => {
+    await mongoose.connection.close()
+})//
