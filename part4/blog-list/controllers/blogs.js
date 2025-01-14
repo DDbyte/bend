@@ -1,11 +1,17 @@
 // controllers/blogs.js
+
+const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog');
-const { error } = require('../utils/logger');
+const User = require('../models/user')
+const config = require('../utils/config')
+
+
+//const { error } = require('../utils/logger');
 
 // Get all blogs
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user',{username: 1, name: 1})
   response.json(blogs)
 })//
 
@@ -22,22 +28,59 @@ blogsRouter.get('/:id', async (request, response, next) => {
 
 // Create a new blog
 blogsRouter.post('/', async (request, response) => {  
-  const {title, author, url, likes} = request.body
+  const { title, author, url, likes } = request.body;  
   
-  if(!title || !url) {
-    return response.status(400).json({error: 'title and url are required'})
+  // Validate required fields
+  if (!title || !url) {
+    return response.status(400).json({ error: 'title and url are required' });
   }
 
-  const blog = new Blog({title, author, url, likes})
-  const savedBlog = await blog.save();
-  response.status(201).json(savedBlog) //default status code(200 OK) changed w/ 201 resource creation  
-})//
+  // Check if the user is authenticated
+  const user = request.user; // Extracted user from userExtractor middleware
+  if (!user) {
+    return response.status(401).json({ error: 'Token missing or invalid' });
+  }
 
-// Delete
+  // a new blog object
+  const blog = new Blog({
+    title,
+    author,
+    url,
+    likes: likes || 0,
+    user: user._id, // Set the creator of the blog
+  });
+
+  const savedBlog = await blog.save();
+
+  // update the user's blogs list
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
+  
+  response.status(201).json(savedBlog); // resource created successfully
+});//
+
+// Delete 
 blogsRouter.delete('/:id', async (request, response) => { 
-  await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).end() 
-})//
+  // Check if the user is authenticated
+  const user = request.user; // Extracted user from userExtractor middleware
+  if (!user) {
+    return response.status(401).json({ error: 'Token missing or invalid' });
+  }
+
+  // Fetch the blog to be deleted
+  const blog = await Blog.findById(request.params.id);
+  if (!blog) {
+    return response.status(404).json({ error: 'Blog not found' });
+  }
+
+  // Check if the user requesting the delete owns the blog
+  if (blog.user.toString() !== user._id.toString()) {
+    return response.status(403).json({ error: 'Permission denied: unauthorized user' });
+  }
+
+  await Blog.findByIdAndDelete(request.params.id);
+  response.status(204).end(); 
+});//
 
 // Update
 blogsRouter.put('/:id', async (request, response) => {

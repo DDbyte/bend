@@ -11,7 +11,9 @@ console.log('MongoDB URL in use:', mongoUrl)
 
 const PORT = process.env.PORT || 3003; // Default to 3003 if PORT is not set
 
+JWT_SECRET = process.env.JWT_SECRET
 module.exports = {
   mongoUrl,
-  PORT
+  PORT,
+  JWT_SECRET
 };
