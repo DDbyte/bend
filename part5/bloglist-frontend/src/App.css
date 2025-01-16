@@ -1,0 +1,100 @@
+/*App.css*/
+
+/* General styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h2 {
+    color: #333;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  button {
+    background-color: #1e5431;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Container */
+  div {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  /* Notifications */
+  .error {
+    color: white;
+    background-color: #f44336; /* Red */
+    border: 1px solid #d32f2f;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .success {
+    color: white;
+    background-color: #4caf50; /* Green */
+    border: 1px solid #388e3c;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  /* Login form */
+  form {
+    margin-bottom: 20px;
+  }
+  
+  form div {
+    margin-bottom: 10px;
+  }
+  
+  form input {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  form input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  /* Blog list */
+  .blog {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+  }
+  
+  .blog:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+    font-size: 14px;
+  }
+  
