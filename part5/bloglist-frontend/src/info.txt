@@ -1,0 +1,81 @@
+
+//hook is used for handling side effects in React functional components.
+useEffect(() => {
+    //This retrieves a string from the browser's local storage under the key 'loggedBlogAppUser'.
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
+    //Checks if the value retrieved from local storage is not null
+    if (loggedUserJSON) {
+    //Local storage can only store strings, so this parses the stored JSON string back into a JavaScript object.      
+      const user = JSON.parse(loggedUserJSON)
+      //Updates the user state with the parsed user data. This makes the logged-in user's information available to the whole app.
+      setUser(user)
+      //Sets the user's authentication token, used in the Authorization header of subsequent API requests
+      blogService.setToken(user.token)
+    }
+  }, [])
+
+  ****************
+  const handleLogin = async (event) => {
+    //ensures the login process is handled entirely by JavaScript, prevents the browser from refreshing when the login form is submitted.
+    event.preventDefault()
+    try {
+      //request, username and password are passed as an object to the login
+      const user = await loginService.login({ username, password })
+      //If the login is successful, the response (user) is stored in localStorage under the key 'loggedBlogAppUser'
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      //extract and set the token in the Authorization header of subsequent api req
+      blogService.setToken(user.token)
+      //Updates user state with the logged-in user details, this change trigger re-render, displaying user info and grating access
+      setUser(user)
+      setUsername('')
+      setPassword('')
+      showNotification(`Welcome ${user.username}`, 'success')
+    } catch (exception) {
+      showNotification('Wrong credentials', 'error')
+    }
+  }
+  *************
+  App.jsx
+  return (
+    <div>
+      <Notification message={notification.message} type={notification.type} />
+      <h2>Blogs</h2>
+
+      {!user && (
+        <form onSubmit={handleLogin}>
+          <div>
+            Username:
+            <input
+              type="text"
+              value={username}
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </div>
+          <div>
+            Password:
+            <input
+              type="password"
+              value={password}
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </div>
+          <button type="submit">Login</button>
+        </form>
+      )}
+
+      {user && (
+        <div>
+          <p>
+            {user.username} logged in <button onClick={handleLogout}>Logout</button>
+          </p>
+          <BlogForm createBlog={addBlog} />
+          {blogs.map((blog) => (            
+            <Blog key={blog.id} blog={blog} updateBlogLikes={updateBlogLikes} deleteBlog={deleteBlog} user={user} />
+          ))}
+        </div>
+      )}
+
+      <Footer />
+    </div>
+  );
+*************

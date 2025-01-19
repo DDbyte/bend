@@ -84,19 +84,57 @@ blogsRouter.delete('/:id', async (request, response) => {
 
 // Update
 blogsRouter.put('/:id', async (request, response) => {
+  
+  const body = request.body
+  const blog = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+    
 
-const body = request.body
-const blog = {
-  title: body.title,
-  author: body.author,
-  url: body.url,
-  likes: body.likes
 }
 
 const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
 response.json(updatedBlog);
 
 })//
+
+//update-updated
+// Update a blog post
+/*blogsRouter.put('/:id', async (request, response) => {
+  const user = request.user; // Extract JWT user info from middleware
+  if (!user) {
+    return response.status(401).json({ error: 'Token missing or invalid' });
+  }
+
+  // Fetch the blog to be updated
+  const blogToUpdate = await Blog.findById(request.params.id);
+  if (!blogToUpdate) {
+    return response.status(404).json({ error: 'Blog not found' });
+  }
+
+  // Check if the user requesting the update owns the blog
+  if (blogToUpdate.user.toString() !== user._id.toString()) {
+    return response.status(403).json({ error: 'Permission denied: unauthorized user' });
+  }
+
+  // Get the data from the request body
+  const { title, author, url, likes } = request.body;
+
+  // Prepare the updated blog object with user reference and new fields
+  const updatedBlogData = {
+    title,
+    author,
+    url,
+    likes,
+    user: user._id // Set user reference from the token
+  };
+
+  // Update the blog and return the updated blog
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, updatedBlogData, { new: true, runValidators: true });
+  response.json(updatedBlog);
+})//*/
 
 
 // Export 
