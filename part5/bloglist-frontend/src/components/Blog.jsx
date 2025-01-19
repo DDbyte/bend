@@ -1,27 +1,27 @@
 // components/Blog.jsx
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, updateBlogLikes, deleteBlog, user }) => {
-  const [detailsVisible, setDetailsVisible] = useState(false);
+  const [detailsVisible, setDetailsVisible] = useState(false)
 
   const toggleDetails = () => {
-    setDetailsVisible(!detailsVisible);
-  };
+    setDetailsVisible(!detailsVisible)
+  }
 
   const handleLike = () => {
     const updatedBlog = {
       ...blog,
       likes: blog.likes + 1,
-    };
-    updateBlogLikes(updatedBlog);
-  };
+    }
+    updateBlogLikes(updatedBlog)
+  }
 
   const handleDelete = () => {
     if (window.confirm(`Remove blog "${blog.title}" by ${blog.author}?`)) {
-      deleteBlog(blog.id);
+      deleteBlog(blog.id)
     }
-  };
+  }
 
   return (
     <div className="blog">
@@ -42,25 +42,14 @@ const Blog = ({ blog, updateBlogLikes, deleteBlog, user }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 //prop-types, if the passed props do not match the specified types, React will show a warning in the console during dev
-Blog.propTypes = {
-  blog: PropTypes.shape({
-    id: PropTypes.string.isRequired, 
-    title: PropTypes.string.isRequired, 
-    author: PropTypes.string.isRequired, 
-    url: PropTypes.string.isRequired, 
-    likes: PropTypes.number,     
-  }).isRequired, // blog object itself is required
-  updateBlogLikes: PropTypes.func.isRequired, 
-  deleteBlog: PropTypes.func.isRequired, 
-  user: PropTypes.shape({ // user prop is optional
-    username: PropTypes.string.isRequired, 
-    name: PropTypes.string, 
-  }),
-};//
+Blog.propTypes = { blog: PropTypes.shape({ id: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired, author: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired, likes: PropTypes.number }).isRequired, updateBlogLikes: PropTypes.func.isRequired, deleteBlog: PropTypes.func.isRequired, user: PropTypes.shape({ username: PropTypes.string.isRequired, name: PropTypes.string }),
+}//
 
 
-export default Blog;
+export default Blog

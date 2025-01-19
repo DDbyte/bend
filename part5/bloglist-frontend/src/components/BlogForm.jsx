@@ -1,20 +1,20 @@
 // components/BlogForm.jsx
-import { useState } from 'react';
+import { useState } from 'react'
 
 const BlogForm = ({ createBlog }) => {
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' });
-  const [visible, setVisible] = useState(false);
+  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' })
+  const [visible, setVisible] = useState(false)
 
   const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+    setVisible(!visible)
+  }
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    createBlog(newBlog);
-    setNewBlog({ title: '', author: '', url: '' });
-    toggleVisibility();
-  };
+    event.preventDefault()
+    createBlog(newBlog)
+    setNewBlog({ title: '', author: '', url: '' })
+    toggleVisibility()
+  }
 
   return (
     <div>
@@ -53,7 +53,7 @@ const BlogForm = ({ createBlog }) => {
         <button onClick={toggleVisibility}>Create New Blog</button>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default BlogForm;
+export default BlogForm
