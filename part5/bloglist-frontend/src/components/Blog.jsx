@@ -25,19 +25,19 @@ const Blog = ({ blog, updateBlogLikes, deleteBlog, user }) => {
 
   return (
     <div className="blog">
-      <div>
+      <div className="blog-title-author">
         {blog.title} by {blog.author}
-        <button onClick={toggleDetails} style={{ marginLeft: '10px', color: 'yellow' }}>
+        <button onClick={toggleDetails} style={{ marginLeft: '10px', color: 'yellow' }} className="toggle-details">
           {detailsVisible ? 'Hide' : 'View'}
         </button>
       </div>
       {detailsVisible && (
-        <div style={{ marginTop: '10px' }}>
+        <div style={{ marginTop: '10px' }} className="blog-details">
           <p>URL: {blog.url}</p>
-          <p>Likes: {blog.likes} <button onClick={handleLike} style={{ marginTop: '10px', background:'orange', color:'black' }}>Like</button></p>
+          <p>Likes: {blog.likes} <button onClick={handleLike} style={{ marginTop: '10px', background:'orange', color:'black' }} className="like-button">Like</button></p>
           <p>User: {blog.user?.name || 'Unknown'}</p>
           {user && blog.user?.username === user.username && (
-            <button onClick={handleDelete} style={{ marginTop: '10px', background:'red', color:'black' }}>Remove</button>
+            <button onClick={handleDelete} style={{ marginTop: '10px', background:'red', color:'black' }} className="delete-button">Remove</button>
           )}
         </div>
       )}
