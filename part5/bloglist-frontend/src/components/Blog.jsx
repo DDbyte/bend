@@ -34,7 +34,7 @@ const Blog = ({ blog, updateBlogLikes, deleteBlog, user }) => {
       {detailsVisible && (
         <div style={{ marginTop: '10px' }} className="blog-details">
           <p>URL: {blog.url}</p>
-          <p>Likes: {blog.likes} <button onClick={handleLike} style={{ marginTop: '10px', background:'orange', color:'black' }} className="like-button">Like</button></p>
+          <p className='likes-count'>Likes: {blog.likes} <button onClick={handleLike} style={{ marginTop: '10px', background:'orange', color:'black' }} className="like-button">Like</button></p>
           <p>User: {blog.user?.name || 'Unknown'}</p>
           {user && blog.user?.username === user.username && (
             <button onClick={handleDelete} style={{ marginTop: '10px', background:'red', color:'black' }} className="delete-button">Remove</button>

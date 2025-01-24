@@ -106,6 +106,7 @@ const App = () => {
               type="text"
               value={username}
               onChange={({ target }) => setUsername(target.value)}
+              aria-label="Username"
             />
           </div>
           <div>
@@ -114,6 +115,7 @@ const App = () => {
               type="password"
               value={password}
               onChange={({ target }) => setPassword(target.value)}
+              aria-label="Password"
             />
           </div>
           <button type="submit">Login</button>
