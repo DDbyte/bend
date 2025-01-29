@@ -2,18 +2,22 @@
 
 import { useSelector, useDispatch } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
+import { setNotification } from '../reducers/notificationReducer'
+import { createSelector } from 'reselect'
+
+// Memoized selector for sorted anecdotes
+const selectSortedAnecdotes = createSelector(
+  (state) => state.anecdotes,  // Get anecdotes from state
+  (anecdotes) => [...anecdotes].sort((a, b) => b.votes - a.votes) // Sort by votes
+)
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(({ anecdotes, filter }) =>
-    anecdotes
-      .filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
-      .sort((a, b) => b.votes - a.votes)
-  )
-
+  const anecdotes = useSelector(selectSortedAnecdotes) // Use the memoized selector
   const dispatch = useDispatch()
 
   const vote = (id) => {
     dispatch(voteAnecdote(id))
+    dispatch(setNotification(`You voted for the anecdote: "${id}"`))
   }
 
   return (
