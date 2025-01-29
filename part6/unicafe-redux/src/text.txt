@@ -1,0 +1,66 @@
+ function counterReducer is a Redux reducer that manages the state of a feedback system.
+ It updates the state based on different action types (GOOD, OK, BAD, ZERO).
+const counterReducer = (state = initialState, action) => {
+state = initialState:
+If state is undefined, it will be set to initialState.
+This ensures Redux always has a valid initial state.
+action:
+The dispatched action that contains { type: 'SOME_ACTION' }.
+Returns a new state based on the action.
+*********
+main.jsx
+
+const store = createStore(counterReducer)
+createStore(counterReducer):
+This function is used to create the Redux store.
+It takes a reducer function (counterReducer) as an argument, which determines how the store's state changes in response
+to dispatched actions.
+store holds the entire application state (e.g., the feedback counts good, ok, bad).
+
+const good = () => store.dispatch({ type: 'GOOD' })
+const ok = () => store.dispatch({ type: 'OK' })
+const bad = () => store.dispatch({ type: 'BAD' })
+const reset = () => store.dispatch({ type: 'ZERO' })
+These event handler functions are responsible for dispatching actions to the Redux store when the respective buttons are clicked.
+store.dispatch({ type: 'ACTION_TYPE' }):
+dispatch sends an action to the Redux store.
+The action is an object with a type property that defines what kind of update to make to the state.
+For example, when the good button is clicked, the action { type: 'GOOD' } is dispatched, which will increment the good count in the state.
+
+Buttons for user interaction:
+Each button calls a function (good, ok, bad, or reset) when clicked, which dispatches an action to update the state.
+store.getState() is used to retrieve the current state of the Redux store and display the values of good, ok, and bad.
+
+const root = ReactDOM.createRoot(document.getElementById('root'))
+ReactDOM.createRoot() creates a root React element to render the entire app.
+This connects React with the DOM and starts rendering the app.
+
+const renderApp = () => {
+  root.render(<App />)
+}
+
+renderApp()
+renderApp():
+A function to render the App component inside the root element.
+Initial render happens by calling renderApp().
+
+store.subscribe(renderApp)
+store.subscribe(renderApp):
+This tells Redux to call renderApp() every time the store's state changes (i.e., when actions are dispatched).
+Why is this needed?
+React does not automatically know when the Redux state has changed.
+We manually subscribe to store updates so that the app is re-rendered whenever the state changes (e.g., after dispatching actions like GOOD, OK, etc.).
+
+Complete Flow:
+User clicks a button (e.g., "good").
+The corresponding action ({ type: 'GOOD' }) is dispatched to the Redux store.
+The counterReducer processes the action and updates the state (e.g., incrementing good).
+store.getState() retrieves the updated state and displays the new values.
+store.subscribe() ensures that the app re-renders whenever the state changes, keeping the UI in sync with the store.
+
+Key Concepts:
+Redux Store: Holds the application's state.
+Actions: Describes what happened (e.g., GOOD, OK, BAD).
+Dispatching: Sends an action to the Redux store to update the state.
+State Management: Redux manages and updates the application state based on dispatched actions.
+React and Redux Sync: The app re-renders using store.subscribe to stay updated when state changes.
