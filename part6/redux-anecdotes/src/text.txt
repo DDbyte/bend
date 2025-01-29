@@ -1,0 +1,97 @@
+//components/AnecdoteList.js
+
+import { useSelector, useDispatch } from 'react-redux'
+import { voteAnecdote } from '../reducers/anecdoteReducer'
+
+const AnecdoteList = () => {
+  const anecdotes = useSelector(state =>
+    [...state].sort((a, b) => b.votes - a.votes) // Sort by votes
+  )
+  const dispatch = useDispatch()
+
+  const vote = (id) => {
+    dispatch(voteAnecdote(id))
+  }
+
+
+
+  return (
+
+
+
+    <div>
+      {anecdotes.map(anecdote => (
+        <div key={anecdote.id} className="anecdote">
+          <div className="anecdote-content">{anecdote.content}</div>
+          <div className="anecdote-votes">
+            has {anecdote.votes}
+            <button onClick={() => vote(anecdote.id)}>vote</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+
+export default AnecdoteList
+******************
+The Filter component is a React functional component responsible for filtering anecdotes based on user input.
+const dispatch = useDispatch()
+useDispatch() is a React-Redux hook that allows the component to send actions to the Redux store.
+When calling dispatch(action), Redux updates the global state based on the action.
+const handleChange = (event) => {...}
+This function is triggered whenever the user types into the input field.
+event.target.value contains the current text entered by the user.
+dispatch(setFilter(event.target.value)) sends an action to update the filter in the Redux store.
+Example:
+If the user types "code", the function dispatches:
+
+{ type: 'SET_FILTER', payload: 'code' }
+This updates the Redux store, and the filtered anecdotes are displayed.
+<input onChange={handleChange} />
+The <input> field listens for changes (onChange event).
+Whenever a user types, handleChange(event) is called, updating the filter state in Redux.
+
+How It Works in the App
+User types a word (e.g., "debug") into the input field.
+handleChange is triggered, dispatching { type: 'SET_FILTER', payload: 'debug' }.
+The Redux store updates the filter state.
+AnecdoteList re-renders, showing only anecdotes that include "debug".
+Summary
+1.useDispatch() allows sending actions to Redux.
+2.handleChange(event) captures input and updates the Redux filter state.
+3.The Filter component dynamically filters anecdotes as the user types.
+-------------
+const filterReducer = (state = '', action) => {
+  switch (action.type) {
+    case 'SET_FILTER':
+      return action.payload
+    default:
+      return state
+  }
+}
+
+// Action creator
+export const setFilter = (filter) => ({
+  type: 'SET_FILTER',
+  payload: filter,
+})
+
+state = '':
+The initial state of the filter is an empty string (''), meaning no filter is applied at the start.
+switch (action.type):
+This checks the type of the dispatched action.
+Case 'SET_FILTER':
+When an action with type 'SET_FILTER' is dispatched, the function updates the state with the new filter value (action.payload).
+Default Case:
+If the action type does not match, it simply returns the current state.
+If the current filter state is "" (empty), and the action { type: 'SET_FILTER', payload: 'debug' } is dispatched,
+the new state becomes "debug".
+setFilter(filter) is a function that takes a filter string as an argument.
+It returns an action object { type: 'SET_FILTER', payload: filter }.
+The type property tells Redux which action is being performed.
+The payload contains the new filter value.
+-------
+filterReducer manages the filter state in Redux.
+setFilter(filter) creates an action to update the filter.
