@@ -1,23 +1,30 @@
 //components/AnecdoteList.js
 
 import { useSelector, useDispatch } from 'react-redux'
-import { voteAnecdote } from '../reducers/anecdoteReducer'
-import { setNotification } from '../reducers/notificationReducer'
-import { createSelector } from 'reselect'
+import { createSelector } from '@reduxjs/toolkit'
+import { useEffect } from 'react'
+import { initializeAnecdotes, voteAnecdote } from '../reducers/anecdoteReducer'
+import { showNotification } from '../reducers/notificationReducer'
 
-// Memoized selector for sorted anecdotes
+// Memoized selector
 const selectSortedAnecdotes = createSelector(
-  (state) => state.anecdotes,  // Get anecdotes from state
-  (anecdotes) => [...anecdotes].sort((a, b) => b.votes - a.votes) // Sort by votes
+  (state) => state.anecdotes,
+  (anecdotes) => [...anecdotes].sort((a, b) => b.votes - a.votes)
 )
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector(selectSortedAnecdotes) // Use the memoized selector
   const dispatch = useDispatch()
 
-  const vote = (id) => {
-    dispatch(voteAnecdote(id))
-    dispatch(setNotification(`You voted for the anecdote: "${id}"`))
+  useEffect(() => {
+    dispatch(initializeAnecdotes())
+  }, [dispatch])
+
+  // Use memoized selector
+  const anecdotes = useSelector(selectSortedAnecdotes)
+
+  const vote = (anecdote) => {
+    dispatch(voteAnecdote(anecdote))
+    dispatch(showNotification(`You voted '${anecdote.content}'`, 5))
   }
 
   return (
@@ -27,7 +34,7 @@ const AnecdoteList = () => {
           <div className="anecdote-content">{anecdote.content}</div>
           <div className="anecdote-votes">
             has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id)}>vote</button>
+            <button onClick={() => vote(anecdote)}>vote</button>
           </div>
         </div>
       ))}
