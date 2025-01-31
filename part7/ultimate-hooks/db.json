@@ -1,0 +1,42 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "content": "custom-hooks are awesome!"
+    },
+    {
+      "id": 2,
+      "content": "best feature ever <3"
+    },
+    {
+      "content": "ultimate hooks",
+      "id": 3
+    },
+    {
+      "content": "read books",
+      "id": 4
+    }
+  ],
+  "persons": [
+    {
+      "id": 1,
+      "name": "mluukkai",
+      "number": "040-5483923"
+    },
+    {
+      "id": 2,
+      "name": "hellas",
+      "number": "012-123123"
+    },
+    {
+      "name": "abba",
+      "number": "450-895623",
+      "id": 3
+    },
+    {
+      "name": "react",
+      "number": "569-568978",
+      "id": 4
+    }
+  ]
+}

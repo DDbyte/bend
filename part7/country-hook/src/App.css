@@ -1,0 +1,19 @@
+#root {
+  max-width: 1280px;
+  margin: 10 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+li {
+  margin-left: 100px; 
+  align-items:start; 
+}
+
+input {
+  width: 80%;
+  height: 30px;
+  background-color: rgb(150, 211, 244);
+  border-radius: 8px;
+ 
+}

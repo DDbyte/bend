@@ -1,0 +1,4 @@
+//component
+useCountry custom React hook that fetches data about a country when given a country name
+It accepts a name parameter (the country name to search for).
+It returns an object containing country, loading, and error

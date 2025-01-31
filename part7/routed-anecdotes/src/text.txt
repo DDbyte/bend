@@ -1,0 +1,40 @@
+BrowserRouter is a component from React Router that enables client-side routing.
+It listens for changes in the browser’s URL and renders the appropriate components without reloading the page.
+
+How BrowserRouter Works
+It uses the browser's History API (like window.history.pushState) to modify the URL without making a new request to the server.
+This allows for fast navigation between pages without needing to refresh the entire application.
+When the URL changes, BrowserRouter finds the correct <Route> and renders the corresponding component.
+Instead of using <a href="">, we use React Router’s <Link> to prevent page reloads.
+<Link to="/about">About</Link> instead of: <a href="/about">About</a>
+After a new anecdote is added, we want to Redirect the user to the / page.Solution: Use useNavigate()
+import { useNavigate } from 'react-router-dom';
+...
+const navigate = useNavigate() // Hook to programmatically navigate
+...
+ navigate('/') // Redirect to home page
+
+Using custom hook useField():
+Before using useField
+const [content, setContent] = useState('');
+const [author, setAuthor] = useState('');
+const [info, setInfo] = useState('');
+<input value={content} onChange={(e) => setContent(e.target.value)} />
+
+After using useField
+const content = useField('text');
+<input {...content} />
+useField returns an object { type, value, onChange }, which we spread into <input> fields.
+
+ Warning: Invalid value for prop `reset` on <input> tag.
+ Either remove it from the element, or pass a string or number value to keep it in the DOM.
+ The warning occurs because we are spreading {...content} into an <input> element.
+ The problem is that reset is included in the object, and <input> does not accept a reset prop.
+ Updated useField Hook:
+
+Instead of returning type, value, onChange, and reset directly, I included a new property inputprops
+that is an object containing only the type, value, and onChange.
+This object can be spread into input elements without including the reset function.
+Inside your CreateNew component, when you create the input elements,
+ spread content.inputProps, author.inputProps, and info.inputProps,
+ which allows  to use the spread syntax efficiently without warnings about invalid props.
