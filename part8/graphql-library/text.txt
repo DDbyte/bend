@@ -1,0 +1,265 @@
+8.1
+ to modify your typeDefs to include bookCount and authorCount queries and update the resolvers accordingly
+ The resolvers object defines how GraphQL should respond to queries.
+ Structure:
+ const resolvers = {
+  Query: {
+    bookCount: () => books.length,
+    authorCount: () => authors.length,
+  },
+}
+The resolvers object contains a Query field.
+Each key inside Query corresponds to a query type defined in typeDefs.
+Each query is resolved by a function that returns the required data.
+When a client sends a query like:
+
+query {
+  bookCount
+  authorCount
+}
+The Apollo Server looks at typeDefs to see if the requested fields exist.
+It finds bookCount and authorCount inside the Query type.
+Apollo then checks resolvers.Query for functions that return data for these queries.
+It executes bookCount: () => books.length and authorCount: () => authors.length.
+The results are sent back to the client.
+
+8.2 8.3
+All books
+query {
+  allBooks {
+    title
+    author
+    published
+    genres
+  }
+}
+
+All authors
+query {
+  allAuthors {
+    name
+    bookCount
+  }
+}
+
+// Define GraphQL Schema
+const typeDefs = `
+
+  type Book {
+    title: String!
+    author: String!
+    published: Int!
+    genres: [String!]!
+  }
+
+  type Author {
+    name: String!
+    born: Int
+    bookCount: Int!
+  }
+
+  type Query {
+    bookCount: Int
+    authorCount: Int
+    allBooks: [Book!]!
+    allAuthors: [Author!]!
+  }
+`
+
+// Define Resolvers
+const resolvers = {
+  Query: {
+    bookCount: () => books.length,
+    authorCount: () => authors.length,
+    allBooks: () => books,
+    allAuthors: () => {
+      return authors.map(author => ({
+        name: author.name,
+        born: author.born || null,
+        bookCount: books.filter(book => book.author === author.name).length
+      }))
+    }
+  }
+}
+
+8.4 - 8.5
+ modify the GraphQL schema (typeDefs) to accept optional parameters for filtering books by author and genre.
+ type Query {
+    bookCount: Int
+    authorCount: Int
+    allBooks(author: String, genre: String): [Book!]!
+    allAuthors: [Author!]!
+  }
+
+  to update the resolver to handle these filters.
+  const resolvers = {
+  Query: {
+    bookCount: () => books.length,
+    authorCount: () => authors.length,
+    allBooks: (_, args) => {
+      let filteredBooks = books;
+
+      if (args.author) {
+        filteredBooks = filteredBooks.filter(book => book.author === args.author);
+      }
+
+      if (args.genre) {
+        filteredBooks = filteredBooks.filter(book => book.genres.includes(args.genre));
+      }
+
+      return filteredBooks;
+    },
+    allAuthors: () => {
+      return authors.map(author => ({
+        name: author.name,
+        born: author.born || null,
+        bookCount: books.filter(book => book.author === author.name).length
+      }))
+    }
+  }
+}
+
+allBooks now accepts two optional arguments:
+
+author: Filters books by the given author.
+genre: Filters books by the given genre.
+If both are provided, it filters by both.
+allBooks Resolver Logic:
+
+It starts with books (the full list).
+If author is given, it filters books by matching the author field.
+If genre is given, it filters books where the genres array includes the specified genre.
+Returns the filtered list.
+query {
+  allBooks(author: "Robert Martin") {
+    title
+  }
+}
+
+query {
+  allBooks(genre: "refactoring") {
+    title
+    author
+  }
+}
+
+query {
+  allBooks(author: "Robert Martin", genre: "refactoring") {
+    title
+    author
+  }
+}
+
+8.6 - 8.7
+to extend GraphQL API by adding two mutations:
+
+addBook: Adds a new book. If the author does not exist, it creates the author.
+editAuthor: Updates an author's birth year.
+update resolvers with a new key Mutation
+Mutation: {
+    addBook: (_, args) => {
+      const newBook = { title: args.title, author: args.author, published: args.published, genres: args.genres };
+      books.push(newBook);
+
+      // Check if author exists
+      if (!authors.some(a => a.name === args.author)) {
+        authors.push({ name: args.author });
+      }
+
+      return newBook;
+    },
+    editAuthor: (_, args) => {
+      const author = authors.find(a => a.name === args.name);
+      if (!author) {
+        return null;
+      }
+
+      author.born = args.setBornTo;
+      return author;
+    }
+  }
+
+   Error: "Mutation" defined in resolvers, but not in schema
+  update schema:
+
+  type Mutation {
+    addBook(title: String!, author: String!, published: Int!, genres: [String!]!): Book
+    editAuthor(name: String!, setBornTo: Int!): Author
+  }
+
+  Operations:
+  mutation {
+  addBook(
+    title: "NoSQL Distilled",
+    author: "Martin Fowler",
+    published: 2012,
+    genres: ["database", "nosql"]
+  ) {
+    title,
+    author
+  }
+}
+The mutation works even if the author is not already saved to the server:
+
+mutation {
+  addBook(
+    title: "Pimeyden tango",
+    author: "Reijo Mäki",
+    published: 1997,
+    genres: ["crime"]
+  ) {
+    title,
+    author
+  }
+}
+
+If the author is not yet saved to the server, a new author is added to the system. The birth years of authors are not saved to the server yet, so the query
+
+query {
+  allAuthors {
+    name
+    born
+    bookCount
+  }
+}
+
+returns
+
+{
+  "data": {
+    "allAuthors": [
+      // ...
+      {
+        "name": "Reijo Mäki",
+        "born": null,
+        "bookCount": 1
+      }
+    ]
+  }
+}
+
+mutation editAuthor, which can be used to set a birth year for an author. The mutation is used like so:
+
+mutation {
+  editAuthor(name: "Reijo Mäki", setBornTo: 1958) {
+    name
+    born
+  }
+}
+If the correct author is found, the operation returns the edited author:
+
+{
+  "data": {
+    "editAuthor": {
+      "name": "Reijo Mäki",
+      "born": 1958
+    }
+  }
+}
+If the author is not in the system, null is returned:
+
+{
+  "data": {
+    "editAuthor": null
+  }
+}
