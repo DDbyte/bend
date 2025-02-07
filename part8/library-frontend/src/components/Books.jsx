@@ -1,12 +1,12 @@
-//components/Books.jsx
-// components/Books.jsx
 import { useQuery, gql } from "@apollo/client";
 
 export const ALL_BOOKS = gql`
   query {
     allBooks {
       title
-      author
+      author {
+        name
+      }
       published
     }
   }
@@ -24,18 +24,20 @@ const Books = (props) => {
 
   return (
     <div>
-      <h2>books</h2>
+      <h2>Books</h2>
       <table>
-        <tbody>
+        <thead>
           <tr>
             <th>Title</th>
             <th>Author</th>
             <th>Published</th>
           </tr>
+        </thead>
+        <tbody>
           {data.allBooks.map((book) => (
             <tr key={book.title}>
               <td>{book.title}</td>
-              <td>{book.author}</td>
+              <td>{book.author.name}</td>
               <td>{book.published}</td>
             </tr>
           ))}
@@ -45,4 +47,4 @@ const Books = (props) => {
   );
 };
 
-export default Books;
+export default Books

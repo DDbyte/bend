@@ -263,3 +263,13 @@ If the author is not in the system, null is returned:
     "editAuthor": null
   }
 }
+
+How It Works
+1. addBook Mutation
+Adds a book with the given title, author, published year, and genres.
+If the author does not exist, it adds the author to the authors array.
+Returns the added book.
+2. editAuthor Mutation
+Finds an author by name.
+If found, updates their birth year (born field).
+If the author is not found, returns null.
