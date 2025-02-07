@@ -1,18 +1,21 @@
-//models/User.js
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const schema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
     minlength: 3
   },
-  friends: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Person'
-    }
-  ],
-})
+  passwordHash: {
+    type: String,
+    required: true
+  },
+  favoriteGenre: {
+    type: String,
+    required: true
+  }
+});
 
-module.exports = mongoose.model('User', schema)
+module.exports = mongoose.model('User', schema);

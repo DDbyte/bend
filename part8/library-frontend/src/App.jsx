@@ -1,33 +1,47 @@
-//App.jsx
-import "./App.css";
 import { useState } from "react";
-import { ApolloProvider } from "@apollo/client";
-import client from "./apolloClient";
-import Authors from "./components/Authors";
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
 import Books from "./components/Books";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
 import NewBook from "./components/NewBook";
 import EditAuthor from "./components/EditAuthor";
 
 const App = () => {
-  const [page, setPage] = useState("authors");
+  const [token, setToken] = useState(localStorage.getItem("library-user-token"));
+
+  const logout = () => {
+    setToken(null);
+    localStorage.removeItem("library-user-token");
+  };
 
   return (
-    <ApolloProvider client={client}>
-      <div>
-        <button onClick={() => setPage("authors")}>Authors</button>
-        <button onClick={() => setPage("books")}>Books</button>
-        <button onClick={() => setPage("add")}>Add Book</button>
-        <button onClick={() => setPage("edit")}>Edit Author</button>
-      </div>
+    <Router>
+      <nav>
+        <Link to="/">Books</Link>
+        {!token && <Link to="/signup">Sign Up</Link>}
+        {token ? (
+          <>
+            <Link to="/add">Add Book</Link>
+            <Link to="/edit-author">Edit Author</Link>
+            <Link to="/recommended">Recommended</Link>
+            <button onClick={logout}>Logout</button>
+          </>
+        ) : (
+          <Link to="/login">Login</Link>
+        )}
+      </nav>
 
-      <Authors show={page === "authors"} />
-      <Books show={page === "books"} />
-      <NewBook show={page === "add"} />
-      <EditAuthor show={page === "edit"} />
-    </ApolloProvider>
+      <Routes>
+        <Route path="/" element={<Books />} />
+        <Route path="/login" element={<Login setToken={setToken} />} />
+        <Route path="/signup" element={<Signup />} />
+        {token && <Route path="/add" element={<NewBook />} />}
+        {token && <Route path="/edit-author" element={<EditAuthor />} />}
+        {token && <Route path="/recommended" element={<RecommendedBooks />} />}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 };
 
 export default App;
-
-
